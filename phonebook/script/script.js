@@ -90,7 +90,7 @@ const data = [
       <th class="delete">Удалить</th>
       <th>Имя</th>
       <th>Фамилия</th>
-      <th>Телефон</th>
+      <th colspan="2">Телефон</th>
     </tr>
     `);
 
@@ -126,6 +126,7 @@ const data = [
       <input class="form-input" name="phone" id="phone" 
         type="number" required>
     </div>
+
     `);
 
     const buttonGroup = createButtonsGroup([
@@ -210,6 +211,7 @@ const data = [
 
     const tdDel = document.createElement('td');
     tdDel.classList.add('delete');
+
     const buttonDel = document.createElement('button');
     buttonDel.classList.add('del-icon');
     tdDel.append(buttonDel);
@@ -226,9 +228,15 @@ const data = [
     phoneLink.textContent = phone;
     tr.phoneLink = phoneLink;
 
+    const edit = document.createElement('td');
+    const btnEdit = document.createElement('button');
+    btnEdit.textContent = 'Редактировать';
+
+    edit.append(btnEdit);
+
     tdPhone.append(phoneLink);
 
-    tr.append(tdDel, tdName, tdSurname, tdPhone);
+    tr.append(tdDel, tdName, tdSurname, tdPhone, edit);
 
     return tr;
   };
