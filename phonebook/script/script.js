@@ -1,26 +1,25 @@
 'use strict';
 
-const data = [
-  {
-    name: 'Иван',
-    surname: 'Петров',
-    phone: '+79514545454',
-  },
-  {
-    name: 'Игорь',
-    surname: 'Семёнов',
-    phone: '+79999999999',
-  },
-  {
-    name: 'Семён',
-    surname: 'Иванов',
-    phone: '+79800252525',
-  },
-  {
-    name: 'Мария',
-    surname: 'Попова',
-    phone: '+79876543210',
-  },
+const data = [{
+  name: 'БИван',
+  surname: 'Петров',
+  phone: '1+79514545454',
+},
+{
+  name: 'АИгорь',
+  surname: 'ВСемёнов',
+  phone: '3+79999999999',
+},
+{
+  name: 'Семён',
+  surname: 'АИванов',
+  phone: '2+79800252525',
+},
+{
+  name: 'ВМария',
+  surname: 'БПопова',
+  phone: '5+79876543210',
+},
 ];
 
 {
@@ -64,7 +63,11 @@ const data = [
     const btnWrapper = document.createElement('div');
     btnWrapper.classList.add('btn-wrapper');
 
-    const btns = params.map(({className, type, text}) => {
+    const btns = params.map(({
+      className,
+      type,
+      text,
+    }) => {
       const button = document.createElement('button');
       button.type = type;
       button.textContent = text;
@@ -88,15 +91,17 @@ const data = [
     thead.insertAdjacentHTML('beforeend', `
     <tr>
       <th class="delete">Удалить</th>
-      <th>Имя</th>
-      <th>Фамилия</th>
-      <th colspan="2">Телефон</th>
+      <th class="name">Имя</th>
+      <th class="surname">Фамилия</th>
+      <th class="phone" colspan="2">Телефон</th>
     </tr>
     `);
 
     const tbody = document.createElement('tbody');
 
     table.append(thead, tbody);
+
+    table.thead = thead;
     table.tbody = tbody;
 
     return table;
@@ -129,17 +134,16 @@ const data = [
 
     `);
 
-    const buttonGroup = createButtonsGroup([
-      {
-        className: 'btn btn-primary mr-3',
-        type: 'submit',
-        text: 'Добавить',
-      },
-      {
-        className: 'btn btn-danger',
-        type: 'reset',
-        text: 'Отмена',
-      },
+    const buttonGroup = createButtonsGroup([{
+      className: 'btn btn-primary mr-3',
+      type: 'submit',
+      text: 'Добавить',
+    },
+    {
+      className: 'btn btn-danger',
+      type: 'reset',
+      text: 'Отмена',
+    },
     ]);
 
     form.append(...buttonGroup.btns);
@@ -175,17 +179,16 @@ const data = [
     const header = createHeader();
     const logo = createLogo(title);
     const main = createMain();
-    const buttonGroup = createButtonsGroup([
-      {
-        className: 'btn btn-primary mr-3',
-        type: 'button',
-        text: 'Добавить',
-      },
-      {
-        className: 'btn btn-danger',
-        type: 'button',
-        text: 'Удалить',
-      },
+    const buttonGroup = createButtonsGroup([{
+      className: 'btn btn-primary mr-3',
+      type: 'button',
+      text: 'Добавить',
+    },
+    {
+      className: 'btn btn-danger',
+      type: 'button',
+      text: 'Удалить',
+    },
     ]);
     const table = createTable();
     const form = createForm();
@@ -198,6 +201,7 @@ const data = [
     app.append(header, main, footer);
 
     return {
+      listHead: table.thead,
       list: table.tbody,
       logo,
       btnAdd: buttonGroup.btns[0],
@@ -207,7 +211,11 @@ const data = [
     };
   };
 
-  const createRow = ({name: firstName, surname, phone}) => {
+  const createRow = ({
+    name: firstName,
+    surname,
+    phone,
+  }) => {
     const tr = document.createElement('tr');
     tr.classList.add('contact');
 
@@ -265,9 +273,9 @@ const data = [
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
     const phoneBook = renderPhoneBook(app, title);
-    const close = document.querySelector('.close');
-    
+
     const {
+      listHead,
       list,
       logo,
       btnAdd,
@@ -290,7 +298,7 @@ const data = [
       if (target === formOverlay ||
         target.closest('.close')) {
         formOverlay.classList.remove('is-visible');
-      };
+      }
     });
 
     btnDel.addEventListener('click', () => {
@@ -303,8 +311,34 @@ const data = [
       const target = e.target;
       if (target.closest('.del-icon')) {
         target.closest('.contact').remove();
-      };
+      }
     });
+
+    const sortArr = (value) => {
+      const result = (a, b) => {
+        if (a[value] > b[value]) {
+          return 1;
+        } else {
+          return -1;
+        }
+      };
+      return result;
+    };
+
+    listHead.addEventListener('click', e => {
+      const value = e.target.classList.value;
+      console.log('value: ', value);
+      data.sort(sortArr(value));
+
+      console.log(data);
+      const contact = list.querySelectorAll('.contact');
+      contact.forEach(el => {
+        el.remove();
+      });
+
+      renderContacts(list, data);
+    });
+    
   };
 
   window.phoneBookInit = init;
