@@ -1,28 +1,33 @@
 'use strict';
 
 const data = [{
-  name: 'БИван',
+  name: 'Иван',
   surname: 'Петров',
-  phone: '1+79514545454',
+  phone: '+79514545454',
 },
 {
-  name: 'АИгорь',
-  surname: 'ВСемёнов',
-  phone: '3+79999999999',
+  name: 'Игорь',
+  surname: 'Семёнов',
+  phone: '+79999999999',
 },
 {
   name: 'Семён',
-  surname: 'АИванов',
-  phone: '2+79800252525',
+  surname: 'Иванов',
+  phone: '+79800252525',
 },
 {
-  name: 'ВМария',
-  surname: 'БПопова',
-  phone: '5+79876543210',
+  name: 'Мария',
+  surname: 'Попова',
+  phone: '+79876543210',
 },
 ];
 
 {
+  const addContactData = contact => {
+    data.push(contact);
+    console.log('data: ', data);
+  };
+
   const createContainer = () => {
     const container = document.createElement('div');
     container.classList.add('container');
@@ -191,12 +196,12 @@ const data = [{
     },
     ]);
     const table = createTable();
-    const form = createForm();
+    const {form, overlay} = createForm();
     const footer = createFooter();
     const copyright = createCopyright(title);
 
     header.headerContainer.append(logo);
-    main.mainContainer.append(buttonGroup.btnWrapper, table, form.overlay);
+    main.mainContainer.append(buttonGroup.btnWrapper, table, overlay);
     footer.footerContainer.append(copyright);
     app.append(header, main, footer);
 
@@ -206,8 +211,8 @@ const data = [{
       logo,
       btnAdd: buttonGroup.btns[0],
       btnDel: buttonGroup.btns[1],
-      formOverlay: form.overlay,
-      form: form.form,
+      formOverlay: overlay,
+      form,
     };
   };
 
@@ -270,37 +275,33 @@ const data = [{
     });
   };
 
-  const init = (selectorApp, title) => {
-    const app = document.querySelector(selectorApp);
-    const phoneBook = renderPhoneBook(app, title);
+  const modalControl = (btnAdd, formOverlay) => {
+    const openModal = () => {
+      formOverlay.classList.add('is-visible');
+    };
 
-    const {
-      listHead,
-      list,
-      logo,
-      btnAdd,
-      formOverlay,
-      form,
-      btnDel,
-    } = phoneBook;
-
-    // Функционал
-    const allRow = renderContacts(list, data);
-
-    hoverRow(allRow, logo);
+    const closeModal = () => {
+      formOverlay.classList.remove('is-visible');
+    };
 
     btnAdd.addEventListener('click', () => {
-      formOverlay.classList.add('is-visible');
+      openModal();
     });
 
     formOverlay.addEventListener('click', e => {
       const target = e.target;
       if (target === formOverlay ||
         target.closest('.close')) {
-        formOverlay.classList.remove('is-visible');
+        closeModal();
       }
     });
 
+    return {
+      closeModal,
+    };
+  };
+
+  const deleteControl = (btnDel, list) => {
     btnDel.addEventListener('click', () => {
       document.querySelectorAll('.delete').forEach(del => {
         del.classList.toggle('is-visible');
@@ -313,6 +314,47 @@ const data = [{
         target.closest('.contact').remove();
       }
     });
+  };
+
+  const addContactPage = (contact, list) => {
+    list.append(createRow(contact));
+  };
+
+  const formControl = (form, list, closeModal) => {
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+
+      const newContact = Object.fromEntries(formData);
+      
+      addContactPage(newContact, list);
+      addContactData(newContact);
+
+      form.reset();
+      closeModal();
+    });
+  };
+
+  const init = (selectorApp, title) => {
+    const app = document.querySelector(selectorApp);
+
+    const {
+      listHead,
+      list,
+      logo,
+      btnAdd,
+      formOverlay,
+      form,
+      btnDel,
+    } = renderPhoneBook(app, title);
+
+    // Функционал
+    const allRow = renderContacts(list, data);
+    const {closeModal} = modalControl(btnAdd, formOverlay);
+
+    hoverRow(allRow, logo);
+    deleteControl(btnDel, list);
+    formControl(form, list, closeModal);
 
     const sortArr = (value) => {
       const result = (a, b) => {
@@ -338,7 +380,6 @@ const data = [{
 
       renderContacts(list, data);
     });
-    
   };
 
   window.phoneBookInit = init;
