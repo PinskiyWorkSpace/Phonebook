@@ -1,28 +1,63 @@
 'use strict';
 
-const data = [{
-  name: 'Иван',
-  surname: 'Петров',
-  phone: '+79514545454',
-},
-{
-  name: 'Игорь',
-  surname: 'Семёнов',
-  phone: '+79999999999',
-},
-{
-  name: 'Семён',
-  surname: 'Иванов',
-  phone: '+79800252525',
-},
-{
-  name: 'Мария',
-  surname: 'Попова',
-  phone: '+79876543210',
-},
-];
+// const data = [{
+//   name: 'Иван',
+//   surname: 'Петров',
+//   phone: '+79514545454',
+// },
+// {
+//   name: 'Игорь',
+//   surname: 'Семёнов',
+//   phone: '+79999999999',
+// },
+// {
+//   name: 'Семён',
+//   surname: 'Иванов',
+//   phone: '+79800252525',
+// },
+// {
+//   name: 'Мария',
+//   surname: 'Попова',
+//   phone: '+79876543210',
+// },
+// ];
 
 {
+  // localStorage.setItem('data', JSON.stringify(data));
+  // localStorage.setItem('data', data);
+  // const data = JSON.parse(localStorage.getItem('data'));
+
+
+  const getStorage = (key) => {
+    const res = JSON.parse(localStorage.getItem(key));
+    if (res !== null) {
+      return res;
+    } else {
+      return [];
+    }
+  };
+
+  const data = getStorage('data');
+
+  const setStorage = (key, obj) => {
+    const newData = getStorage(key);
+
+    newData.push(obj);
+
+    localStorage.setItem('data', JSON.stringify(newData));
+  };
+
+  const removeStorage = (phone) => {
+    const newData = getStorage('data');
+
+    newData.forEach((el, index) => {
+      if (el.phone === phone) {
+        newData.splice(index, 1);
+      }
+    });
+    localStorage.setItem('data', JSON.stringify(newData));
+  };
+
   const addContactData = contact => {
     data.push(contact);
     console.log('data: ', data);
@@ -196,7 +231,10 @@ const data = [{
     },
     ]);
     const table = createTable();
-    const {form, overlay} = createForm();
+    const {
+      form,
+      overlay,
+    } = createForm();
     const footer = createFooter();
     const copyright = createCopyright(title);
 
@@ -310,8 +348,11 @@ const data = [{
 
     list.addEventListener('click', e => {
       const target = e.target;
+      const phone = target.closest('.contact').querySelector('a').textContent;
+
       if (target.closest('.del-icon')) {
         target.closest('.contact').remove();
+        removeStorage(phone);
       }
     });
   };
@@ -326,12 +367,14 @@ const data = [{
       const formData = new FormData(e.target);
 
       const newContact = Object.fromEntries(formData);
-      
+
       addContactPage(newContact, list);
       addContactData(newContact);
 
       form.reset();
       closeModal();
+
+      setStorage('data', newContact);
     });
   };
 
@@ -347,10 +390,11 @@ const data = [{
       form,
       btnDel,
     } = renderPhoneBook(app, title);
-
     // Функционал
     const allRow = renderContacts(list, data);
-    const {closeModal} = modalControl(btnAdd, formOverlay);
+    const {
+      closeModal,
+    } = modalControl(btnAdd, formOverlay);
 
     hoverRow(allRow, logo);
     deleteControl(btnDel, list);
@@ -369,10 +413,8 @@ const data = [{
 
     listHead.addEventListener('click', e => {
       const value = e.target.classList.value;
-      console.log('value: ', value);
       data.sort(sortArr(value));
 
-      console.log(data);
       const contact = list.querySelectorAll('.contact');
       contact.forEach(el => {
         el.remove();
