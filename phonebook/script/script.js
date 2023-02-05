@@ -1,33 +1,6 @@
 'use strict';
 
-// const data = [{
-//   name: 'Иван',
-//   surname: 'Петров',
-//   phone: '+79514545454',
-// },
-// {
-//   name: 'Игорь',
-//   surname: 'Семёнов',
-//   phone: '+79999999999',
-// },
-// {
-//   name: 'Семён',
-//   surname: 'Иванов',
-//   phone: '+79800252525',
-// },
-// {
-//   name: 'Мария',
-//   surname: 'Попова',
-//   phone: '+79876543210',
-// },
-// ];
-
 {
-  // localStorage.setItem('data', JSON.stringify(data));
-  // localStorage.setItem('data', data);
-  // const data = JSON.parse(localStorage.getItem('data'));
-
-
   const getStorage = (key) => {
     const res = JSON.parse(localStorage.getItem(key));
     if (res !== null) {
