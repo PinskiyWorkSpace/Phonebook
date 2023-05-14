@@ -1,5 +1,5 @@
-import {createRow} from './createElements.js';
-import {addContactData, setStorage, removeStorage} from './serviceStorage.js';
+import {createRow} from './createElements.mjs';
+import {addContactData, setStorage, removeStorage} from './serviceStorage';
 
 export const hoverRow = (allRow, logo) => {
   const text = logo.textContent;
@@ -78,3 +78,4 @@ export const formControl = (form, list, closeModal) => {
     setStorage('data', newContact);
   });
 };
+

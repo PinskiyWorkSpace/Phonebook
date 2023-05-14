@@ -1,6 +1,8 @@
-import {renderPhoneBook, renderContacts} from './modules/render.js';
-import data from './modules/serviceStorage.js';
-import * as control from './modules/control.js';
+import {renderPhoneBook, renderContacts} from './script/render';
+import data from './script/serviceStorage';
+import * as control from './script/control';
+
+import './scss/index.scss';
 
 {
   const init = (selectorApp, title) => {
@@ -49,5 +51,5 @@ import * as control from './modules/control.js';
     });
   };
 
-  window.phoneBookInit = init;
+  init('#app', 'Филипп');
 }
